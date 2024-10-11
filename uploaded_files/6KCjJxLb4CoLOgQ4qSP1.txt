@@ -1,0 +1,9 @@
+Research Interests
+
+Access control techniques
+Authentication and cryptography with noisy data (e.g., biometrics)
+Privacy protection in LBS
+Security issues in outsourced databases services
+Information security visualization
+Blockchains and applications
+Open (big) data for smart cities: architecture, security, and applications
