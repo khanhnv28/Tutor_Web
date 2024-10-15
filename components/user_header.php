@@ -44,8 +44,8 @@ if(isset($message)){
          <span>Student</span>
          <a href="profile.php" class="btn">View profile</a>
          <div class="flex-btn">
-            <a href="login.php" class="option-btn">Login</a>
-            <a href="register.php" class="option-btn">Register</a>
+            <a href="login_combine.php" class="option-btn">Login</a>
+            <a href="register_combine.php" class="option-btn">Register</a>
          </div>
          <a href="components/user_logout.php" onclick="return confirm('logout from this website?');" class="delete-btn">Sign out</a>
          <?php
@@ -53,8 +53,8 @@ if(isset($message)){
          ?>
          <h3>Login or register</h3>
           <div class="flex-btn">
-            <a href="login.php" class="option-btn">Login</a>
-            <a href="register.php" class="option-btn">Register</a>
+            <a href="login_combine.php" class="option-btn">Login</a>
+            <a href="register_combine.php" class="option-btn">Register</a>
          </div>
          <?php
             }
@@ -76,28 +76,36 @@ if(isset($message)){
    </div>
 
    <div class="profile">
-         <?php
-            $select_profile = $conn->prepare("SELECT * FROM `users` WHERE id = ?");
-            $select_profile->execute([$user_id]);
-            if($select_profile->rowCount() > 0){
+    <?php
+    $user_id = isset($_COOKIE['user_id']) ? $_COOKIE['user_id'] : null; // Initialize user_id
+    if ($user_id) { // Check if user_id is not null
+        $select_profile = $conn->prepare("SELECT * FROM `users` WHERE id = ?");
+        $select_profile->execute([$user_id]);
+        if ($select_profile->rowCount() > 0) {
             $fetch_profile = $select_profile->fetch(PDO::FETCH_ASSOC);
-         ?>
-         <img src="uploaded_files/<?= $fetch_profile['image']; ?>" alt="">
-         <h3><?= $fetch_profile['name']; ?></h3>
-         <span>Student</span>
-         <a href="profile.php" class="btn">View profile</a>
-         <?php
-            }else{
-         ?>
-         <h3>Login or register</h3>
-          <div class="flex-btn" style="padding-top: .5rem;">
-            <a href="login.php" class="option-btn">Login</a>
-            <a href="register.php" class="option-btn">Register</a>
-         </div>
-         <?php
-            }
-         ?>
-      </div>
+            ?>
+            <img src="uploaded_files/<?= htmlspecialchars($fetch_profile['image']); ?>" alt="">
+            <h3><?= htmlspecialchars($fetch_profile['name']); ?></h3>
+            <span>Student</span>
+            <a href="profile.php" class="btn">View profile</a>
+            <?php
+        } else {
+            // Fallback if no profile is found
+            echo "<h3>Profile not found</h3>";
+        }
+    } else {
+        // User is not logged in
+        ?>
+        <h3>Login or register</h3>
+        <div class="flex-btn" style="padding-top: .5rem;">
+            <a href="login_combine.php" class="option-btn">Login</a>
+            <a href="register_combine.php" class="option-btn">Register</a>
+        </div>
+        <?php
+    }
+    ?>
+</div>
+
 
    <nav class="navbar">
       <a href="home.php"><i class="fas fa-home"></i><span>Home</span></a>

@@ -190,7 +190,7 @@ $total_bookmarked = $select_bookmark->rowCount();
       <div class="box tutor">
          <h3 class="title">Become a tutor</h3>
          <p>Share your knowledge, inspire students, and grow your professional brand. Join our community of expert educators and start teaching today</p>
-         <a href="admin/register.php" class="inline-btn">Join now</a>
+         <a href="register_combine.php" class="inline-btn">Join now</a>
       </div>
       
 

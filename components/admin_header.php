@@ -44,7 +44,7 @@ if(isset($message)){
             <a href="login.php" class="option-btn">Login</a>
             <a href="register.php" class="option-btn">Register</a>
          </div>
-         <a href="../components/admin_logout.php" onclick="return confirm('logout from this website?');" class="delete-btn">Sign out</a>
+         <a href="../components/admin_logout.php" onclick="return confirm('Logout from this website?');" class="delete-btn">Sign out</a>
          <?php
             }else{
          ?>
@@ -86,10 +86,10 @@ if(isset($message)){
          <?php
             }else{
          ?>
-         <h3>please login or register</h3>
+         <h3>Please login or register</h3>
           <div class="flex-btn">
-            <a href="login.php" class="option-btn">Login</a>
-            <a href="register.php" class="option-btn">Register</a>
+            <a href="login_combine.php" class="option-btn">Login</a>
+            <a href="register_combine.php" class="option-btn">Register</a>
          </div>
          <?php
             }
@@ -101,7 +101,7 @@ if(isset($message)){
       <a href="playlists.php"><i class="fa-solid fa-bars-staggered"></i><span>Playlists</span></a>
       <a href="contents.php"><i class="fas fa-graduation-cap"></i><span>Contents</span></a>
       <a href="comments.php"><i class="fas fa-comment"></i><span>Comments</span></a>
-      <a href="../components/admin_logout.php" onclick="return confirm('logout from this website?');"><i class="fas fa-right-from-bracket"></i><span>Sign out</span></a>
+      <a href="../components/admin_logout.php" onclick="return confirm('Logout from this website?');"><i class="fas fa-right-from-bracket"></i><span>Sign out</span></a>
    </nav>
 
 </div>
