@@ -38,7 +38,7 @@ if(isset($message)){
          ?>
          <img src="../uploaded_files/<?= $fetch_profile['image']; ?>" alt="">
          <h3><?= $fetch_profile['name']; ?></h3>
-         <span><?= $fetch_profile['profession']; ?></span>
+         <span><?= htmlspecialchars($fetch_profile['faculty']); ?></span>
          <a href="profile.php" class="btn">View profile</a>
          <div class="flex-btn">
             <a href="login.php" class="option-btn">Login</a>
@@ -81,7 +81,7 @@ if(isset($message)){
          ?>
          <img src="../uploaded_files/<?= $fetch_profile['image']; ?>" alt="">
          <h3><?= $fetch_profile['name']; ?></h3>
-         <span><?= $fetch_profile['profession']; ?></span>
+         <span><?= htmlspecialchars($fetch_profile['faculty']); ?></span>
          <a href="profile.php" class="btn">View profile</a>
          <?php
             }else{
@@ -98,7 +98,7 @@ if(isset($message)){
 
    <nav class="navbar">
       <a href="dashboard.php"><i class="fas fa-home"></i><span>Home</span></a>
-      <a href="playlists.php"><i class="fa-solid fa-bars-staggered"></i><span>Playlists</span></a>
+      <a href="playlists.php"><i class="fa-solid fa-bars-staggered"></i><span>Your Projects</span></a>
       <a href="contents.php"><i class="fas fa-graduation-cap"></i><span>Contents</span></a>
       <a href="comments.php"><i class="fas fa-comment"></i><span>Comments</span></a>
       <a href="../components/admin_logout.php" onclick="return confirm('Logout from this website?');"><i class="fas fa-right-from-bracket"></i><span>Sign out</span></a>

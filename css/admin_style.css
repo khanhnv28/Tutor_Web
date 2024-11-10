@@ -599,18 +599,23 @@ section{
 }
 
 .playlists .box-container{
-   display: grid;
+   display: flex;
    grid-template-columns: repeat(auto-fit, 35rem);
    align-items: flex-start;
+   flex-wrap: wrap;
    justify-content: center;
-   gap: 1.5rem;
+   gap: 20px;
 }
 
 .playlists .box-container .box{
    background-color: var(--white);
-   border-radius: .5rem;
-   padding: 2rem;
-   overflow-x:hidden;
+   border-radius: 8px;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+   padding: 20px;
+   flex: 0 0 calc(25% - 20px); /* Each box takes up 25% of the width of the container, minus the gap */
+   text-align: center;
+   position: relative;
+   overflow: hidden;
 }
 
 .playlists .box-container .box .thumb{

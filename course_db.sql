@@ -99,11 +99,15 @@ CREATE TABLE `likes` (
 CREATE TABLE `playlist` (
   `id` varchar(20) NOT NULL,
   `tutor_id` varchar(20) NOT NULL,
-  `title` varchar(100) NOT NULL,
-  `description` varchar(1000) NOT NULL,
-  `thumb` varchar(100) NOT NULL,
-  `date` date NOT NULL DEFAULT current_timestamp(),
-  `status` varchar(20) NOT NULL DEFAULT 'deactive'
+  `title` varchar(100) NOT NULL,  -- Project Name
+  `description` varchar(1000) NOT NULL,  -- Project Description
+  `start_date` date NOT NULL,  -- Project Start Date
+  `end_date` date,  -- Project End Date (optional for ongoing projects)
+  `status` ENUM('ongoing', 'completed') NOT NULL DEFAULT 'completed',  -- Status ('completed', 'ongoing')
+  `role` varchar(100) NOT NULL,  -- Role (like Chief Investigator, Researcher, etc.)
+  `funds` varchar(100) NOT NULL,  -- Source of funds
+  `notes` varchar(1000),  -- Any additional collaboration/notes
+  `date_created` date NOT NULL DEFAULT current_timestamp()  -- Creation Date
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -113,13 +117,18 @@ CREATE TABLE `playlist` (
 --
 
 CREATE TABLE `tutors` (
-  `id` varchar(20) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `profession` varchar(50) NOT NULL,
-  `email` varchar(50) NOT NULL,
-  `password` varchar(50) NOT NULL,
-  `image` varchar(100) NOT NULL
+  `id` VARCHAR(20) NOT NULL,
+  `name` VARCHAR(50) NOT NULL,
+  `faculty` VARCHAR(50),
+  `university` VARCHAR(100),
+  `orcid` VARCHAR(19) UNIQUE,
+  `email` VARCHAR(50) NOT NULL,
+  `password` VARCHAR(50) NOT NULL,
+  `image` VARCHAR(100) DEFAULT 'default.png',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 -- --------------------------------------------------------
 

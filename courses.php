@@ -30,40 +30,109 @@ if(isset($_COOKIE['user_id'])){
 <?php include 'components/user_header.php'; ?>
 
 <!-- courses section starts  -->
+<style>
+   .courses .box-container {
+   display: grid;
+   grid-template-columns: repeat(4, 1fr); /* 4 columns */
+   gap: 20px; /* Spacing between the boxes */
+}
 
+.courses .box {
+   background-color: #fff;
+   border-radius: 10px;
+   padding: 15px;
+   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.courses .tutor {
+   display: flex;
+   align-items: center;
+   margin-bottom: 10px;
+}
+
+.courses .tutor img {
+   width: 50px;
+   height: 50px;
+   border-radius: 50%;
+   object-fit: cover;
+   margin-right: 15px;
+}
+
+.courses .thumb {
+   width: 100%;
+   height: auto;
+   border-radius: 10px;
+   margin: 10px 0;
+}
+
+.courses .title {
+   font-size: 18px;
+   font-weight: bold;
+   margin-bottom: 10px;
+}
+
+.courses .inline-btn {
+   display: inline-block;
+   padding: 10px 20px;
+   background-color: #007bff;
+   color: #fff;
+   border-radius: 5px;
+   text-align: center;
+   text-decoration: none;
+}
+
+@media (max-width: 1200px) {
+   .courses .box-container {
+      grid-template-columns: repeat(3, 1fr); /* 3 columns for smaller screens */
+   }
+}
+
+@media (max-width: 768px) {
+   .courses .box-container {
+      grid-template-columns: repeat(2, 1fr); /* 2 columns for tablets */
+   }
+}
+
+@media (max-width: 576px) {
+   .courses .box-container {
+      grid-template-columns: 1fr; /* 1 column for mobile devices */
+   }
+}
+
+</style>
 <section class="courses">
 
-   <h1 class="heading">All courses</h1>
+   <h1 class="heading">Tutors</h1>
 
    <div class="box-container">
 
       <?php
-         $select_courses = $conn->prepare("SELECT * FROM `playlist` WHERE status = ? ORDER BY date DESC");
-         $select_courses->execute(['active']);
-         if($select_courses->rowCount() > 0){
-            while($fetch_course = $select_courses->fetch(PDO::FETCH_ASSOC)){
-               $course_id = $fetch_course['id'];
+         // Select all tutors
+         $select_tutors = $conn->prepare("SELECT * FROM `tutors`");
+         $select_tutors->execute();
+         if($select_tutors->rowCount() > 0){
+            while($fetch_tutor = $select_tutors->fetch(PDO::FETCH_ASSOC)){
+               $tutor_id = $fetch_tutor['id'];
 
-               $select_tutor = $conn->prepare("SELECT * FROM `tutors` WHERE id = ?");
-               $select_tutor->execute([$fetch_course['tutor_id']]);
-               $fetch_tutor = $select_tutor->fetch(PDO::FETCH_ASSOC);
+               // Count projects for the tutor
+               $select_courses_count = $conn->prepare("SELECT COUNT(*) as total_projects FROM `playlist` WHERE tutor_id = ?");
+               $select_courses_count->execute([$tutor_id]);
+               $fetch_courses_count = $select_courses_count->fetch(PDO::FETCH_ASSOC);
       ?>
       <div class="box">
          <div class="tutor">
             <img src="uploaded_files/<?= $fetch_tutor['image']; ?>" alt="">
             <div>
                <h3><?= $fetch_tutor['name']; ?></h3>
-               <span><?= $fetch_course['date']; ?></span>
+               <span>Total Projects: <?= $fetch_courses_count['total_projects']; ?></span>
             </div>
          </div>
-         <img src="uploaded_files/<?= $fetch_course['thumb']; ?>" class="thumb" alt="">
-         <h3 class="title"><?= $fetch_course['title']; ?></h3>
-         <a href="playlist.php?get_id=<?= $course_id; ?>" class="inline-btn">View playlist</a>
+         <a href="tutor_projects.php?tutor_id=<?= $tutor_id; ?>" class="inline-btn">View Projects</a>
       </div>
       <?php
          }
       }else{
-         echo '<p class="empty">no courses added yet!</p>';
+         echo '<p class="empty">No tutors available!</p>';
       }
       ?>
 
@@ -72,8 +141,6 @@ if(isset($_COOKIE['user_id'])){
 </section>
 
 <!-- courses section ends -->
-
-
 
 <?php include 'components/footer.php'; ?>
 

@@ -2,13 +2,20 @@
 
 include '../components/connect.php';
 
+// Ensure the tutor is logged in via cookie
 if(isset($_COOKIE['tutor_id'])){
    $tutor_id = $_COOKIE['tutor_id'];
-}else{
+} else {
    $tutor_id = '';
    header('location:login.php');
 }
 
+// Fetch tutor details
+$select_profile = $conn->prepare("SELECT * FROM `tutors` WHERE id = ?");
+$select_profile->execute([$tutor_id]);
+$fetch_profile = $select_profile->fetch();
+
+// Fetch contents, playlists, likes, and comments related to the tutor
 $select_contents = $conn->prepare("SELECT * FROM `content` WHERE tutor_id = ?");
 $select_contents->execute([$tutor_id]);
 $total_contents = $select_contents->rowCount();
@@ -35,12 +42,11 @@ $total_comments = $select_comments->rowCount();
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Dashboard</title>
 
-   <!-- font awesome cdn link  -->
+   <!-- font awesome cdn link -->
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
 
-   <!-- custom css file link  -->
+   <!-- custom css file link -->
    <link rel="stylesheet" href="../css/admin_style.css">
-
 </head>
 <body>
 
@@ -54,7 +60,7 @@ $total_comments = $select_comments->rowCount();
 
       <div class="box">
          <h3>Welcome!</h3>
-         <p><?= $fetch_profile['name']; ?></p>
+         <p><?= htmlspecialchars($fetch_profile['name']); ?></p>      
          <a href="profile.php" class="btn">View profile</a>
       </div>
 
@@ -66,8 +72,8 @@ $total_comments = $select_comments->rowCount();
 
       <div class="box">
          <h3><?= $total_playlists; ?></h3>
-         <p>Total playlists</p>
-         <a href="add_playlist.php" class="btn">Add new playlist</a>
+         <p>Total projects</p>
+         <a href="add_playlist.php" class="btn">Add new projects</a>
       </div>
 
       <div class="box">
@@ -94,7 +100,6 @@ $total_comments = $select_comments->rowCount();
    </div>
 
 </section>
-
 
 <?php include '../components/footer.php'; ?>
 
