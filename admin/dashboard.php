@@ -2,12 +2,18 @@
 
 include '../components/connect.php';
 
-if(isset($_COOKIE['tutor_id'])){
+if (isset($_COOKIE['tutor_id'])) {
    $tutor_id = $_COOKIE['tutor_id'];
-}else{
+} else {
    $tutor_id = '';
    header('location:login.php');
+   exit;
 }
+
+// Replace 'id' with the correct column name for the tutor ID
+$select_profile = $conn->prepare("SELECT * FROM `Users` WHERE id = ?");
+$select_profile->execute([$tutor_id]);
+$fetch_profile = $select_profile->fetch(PDO::FETCH_ASSOC);
 
 $select_contents = $conn->prepare("SELECT * FROM `content` WHERE tutor_id = ?");
 $select_contents->execute([$tutor_id]);
@@ -54,7 +60,7 @@ $total_comments = $select_comments->rowCount();
 
       <div class="box">
          <h3>Welcome!</h3>
-         <p><?= $fetch_profile['name']; ?></p>
+         <p><?= isset($fetch_profile['name']) ? htmlspecialchars($fetch_profile['name']) : 'Guest'; ?></p>
          <a href="profile.php" class="btn">View profile</a>
       </div>
 
