@@ -2,13 +2,18 @@
 
 include '../components/connect.php';
 
+
 // Ensure the tutor is logged in via cookie
 if(isset($_COOKIE['tutor_id'])){
+if (isset($_COOKIE['tutor_id'])) {
+
    $tutor_id = $_COOKIE['tutor_id'];
 } else {
    $tutor_id = '';
    header('location:login.php');
+   exit;
 }
+
 
 // Fetch tutor details
 $select_profile = $conn->prepare("SELECT * FROM `tutors` WHERE id = ?");
@@ -16,6 +21,13 @@ $select_profile->execute([$tutor_id]);
 $fetch_profile = $select_profile->fetch();
 
 // Fetch contents, playlists, likes, and comments related to the tutor
+
+// Replace 'id' with the correct column name for the tutor ID
+$select_profile = $conn->prepare("SELECT * FROM `Users` WHERE id = ?");
+$select_profile->execute([$tutor_id]);
+$fetch_profile = $select_profile->fetch(PDO::FETCH_ASSOC);
+
+
 $select_contents = $conn->prepare("SELECT * FROM `content` WHERE tutor_id = ?");
 $select_contents->execute([$tutor_id]);
 $total_contents = $select_contents->rowCount();
@@ -60,7 +72,11 @@ $total_comments = $select_comments->rowCount();
 
       <div class="box">
          <h3>Welcome!</h3>
+
          <p><?= htmlspecialchars($fetch_profile['name']); ?></p>      
+
+         <p><?= isset($fetch_profile['name']) ? htmlspecialchars($fetch_profile['name']) : 'Guest'; ?></p>
+
          <a href="profile.php" class="btn">View profile</a>
       </div>
 
