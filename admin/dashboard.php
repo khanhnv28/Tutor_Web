@@ -4,17 +4,13 @@ include '../components/connect.php';
 
 
 // Ensure the tutor is logged in via cookie
-if(isset($_COOKIE['tutor_id'])){
 if (isset($_COOKIE['tutor_id'])) {
-
    $tutor_id = $_COOKIE['tutor_id'];
 } else {
    $tutor_id = '';
    header('location:login.php');
    exit;
 }
-
-
 // Fetch tutor details
 $select_profile = $conn->prepare("SELECT * FROM `tutors` WHERE id = ?");
 $select_profile->execute([$tutor_id]);
@@ -72,11 +68,9 @@ $total_comments = $select_comments->rowCount();
 
       <div class="box">
          <h3>Welcome!</h3>
-
-         <p><?= htmlspecialchars($fetch_profile['name']); ?></p>      
-
+         
+         <!-- <?= htmlspecialchars($fetch_profile['name']); ?> -->
          <p><?= isset($fetch_profile['name']) ? htmlspecialchars($fetch_profile['name']) : 'Guest'; ?></p>
-
          <a href="profile.php" class="btn">View profile</a>
       </div>
 

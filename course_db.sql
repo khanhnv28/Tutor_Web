@@ -109,12 +109,6 @@ CREATE TABLE `playlist` (
   `notes` varchar(1000),  -- Any additional collaboration/notes
   `date_created` date NOT NULL DEFAULT current_timestamp()  -- Creation Date
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  `title` varchar(100) NOT NULL,
-  `description` varchar(1000) NOT NULL,
-  `thumb` varchar(100) NOT NULL,
-  `date` date NOT NULL DEFAULT current_timestamp(),
-  `status` varchar(20) NOT NULL DEFAULT 'deactive'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -130,26 +124,18 @@ CREATE TABLE `tutors` (
   `orcid` VARCHAR(19) UNIQUE,
   `email` VARCHAR(50) NOT NULL,
   `password` VARCHAR(50) NOT NULL,
-  `image` VARCHAR(100) DEFAULT 'default.png',
+  `image` VARCHAR(100) DEFAULT 'anoymous.jpg',
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  `id` varchar(20) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `profession` varchar(50) NOT NULL,
-  `email` varchar(50) NOT NULL,
-  `password` varchar(50) NOT NULL,
-  `image` varchar(100) NOT NULL,
-  `favorite_color` varchar(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `tutors`
 --
 
-INSERT INTO `tutors` (`id`, `name`, `profession`, `email`, `password`, `image`, `favorite_color`) VALUES
-('MuSFtvfM164yOr4V7ipf', 'Nguyễn Duy Khánh', 'developer', 'nguyenduykhanh18112003@gmail.com', '7c4a8d09ca3762af61e59520943dc26494f8941b', 'yKXPdkRiI1DvVa0flrj0.jpg', NULL),
-('aF7c33qcVvpAZ5biS7vs', 'Nguyễn Duy Khánh', 'developer', 'ndk1811@gmail.com', '7c4a8d09ca3762af61e59520943dc26494f8941b', 'tN9R0ZNAHkRWCPMt9WfK.jpg', NULL);
+-- INSERT INTO `tutors` (`id`, `name`, `profession`, `email`, `password`, `image`, `favorite_color`) VALUES
+-- ('MuSFtvfM164yOr4V7ipf', 'Nguyễn Duy Khánh', 'developer', 'nguyenduykhanh18112003@gmail.com', '7c4a8d09ca3762af61e59520943dc26494f8941b', 'yKXPdkRiI1DvVa0flrj0.jpg', NULL),
+-- ('aF7c33qcVvpAZ5biS7vs', 'Nguyễn Duy Khánh', 'developer', 'ndk1811@gmail.com', '7c4a8d09ca3762af61e59520943dc26494f8941b', 'tN9R0ZNAHkRWCPMt9WfK.jpg', NULL);
 
 
 -- --------------------------------------------------------

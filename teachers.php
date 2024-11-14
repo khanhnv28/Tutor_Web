@@ -63,7 +63,7 @@ if (isset($_COOKIE['user_id'])) {
          text-align: center;
          font-size: 1.2em;
          color: #888;
-   <style>
+      }
       /* Grid layout for tutors */
       .tutors-list {
          display: grid;
@@ -99,7 +99,7 @@ if (isset($_COOKIE['user_id'])) {
 <?php include 'components/user_header.php'; ?>
 
 <section class="teachers">
-   <h1 class="heading">Giảng viên chuyên nghiệp</h1>
+   <h1 class="heading">Professional Tutor</h1>
 
    <form action="search_tutor.php" method="post" class="search-tutor">
       <input type="text" name="search_tutor" maxlength="100" placeholder="Tìm kiếm giảng viên..." required>
