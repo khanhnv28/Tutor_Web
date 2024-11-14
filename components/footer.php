@@ -97,7 +97,7 @@
     color: #007bff; 
  }
 body.dark .footer {
-    background-color: #333; /* Màu nền footer khi ở chế độ tối */
+    background-color: #222; /* Màu nền footer khi ở chế độ tối */
     color: #f8f9fa; /* Màu chữ khi ở chế độ tối */
 }
 

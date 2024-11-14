@@ -148,30 +148,10 @@ $total_bookmarked = $select_bookmark->rowCount();
       <?php
          }else{ 
       ?>
-      <!-- <div class="box" style="text-align: center;">
-         <h3 class="title">please login or register</h3>
-          <div class="flex-btn" style="padding-top: .5rem;">
-            <a href="login.php" class="option-btn">login</a>
-            <a href="register.php" class="option-btn">register</a>
-         </div>
-      </div> -->
+      
       <?php
       }
       ?>
-
-      <!-- <div class="box">
-         <h3 class="title">Top categories</h3>
-         <div class="flex">
-            <a href="search_course.php?"><i class="fas fa-code"></i><span>Development</span></a>
-            <a href="#"><i class="fas fa-chart-simple"></i><span>Business</span></a>
-            <a href="#"><i class="fas fa-pen"></i><span>Design</span></a>
-            <a href="#"><i class="fas fa-chart-line"></i><span>Marketing</span></a>
-            <a href="#"><i class="fas fa-music"></i><span>Music</span></a>
-            <a href="#"><i class="fas fa-camera"></i><span>Photography</span></a>
-            <a href="#"><i class="fas fa-cog"></i><span>Software</span></a>
-            <a href="#"><i class="fas fa-vial"></i><span>Computer Science</span></a>
-         </div>
-      </div> -->
 
       <div class="box">
          <h3 class="title">Popular topics</h3>
@@ -206,37 +186,38 @@ $total_bookmarked = $select_bookmark->rowCount();
 <section class="courses">
 
    <h1 class="heading">Latest courses</h1>
-
+   
    <div class="box-container">
 
       <?php
-         $select_courses = $conn->prepare("SELECT * FROM `playlist` WHERE status = ? ORDER BY date DESC LIMIT 6");
-         $select_courses->execute(['active']);
+         // Fetch the latest completed course
+         $select_courses = $conn->prepare("SELECT * FROM `playlist` WHERE status = ? ORDER BY date_created DESC LIMIT 1");
+         $select_courses->execute(['completed']);
          if($select_courses->rowCount() > 0){
-            while($fetch_course = $select_courses->fetch(PDO::FETCH_ASSOC)){
-               $course_id = $fetch_course['id'];
-
-               $select_tutor = $conn->prepare("SELECT * FROM `tutors` WHERE id = ?");
-               $select_tutor->execute([$fetch_course['tutor_id']]);
-               $fetch_tutor = $select_tutor->fetch(PDO::FETCH_ASSOC);
+            $fetch_course = $select_courses->fetch(PDO::FETCH_ASSOC);
+            $course_id = $fetch_course['id'];
+            
+            // Fetch the associated tutor for the course
+            $select_tutor = $conn->prepare("SELECT * FROM `tutors` WHERE id = ?");
+            $select_tutor->execute([$fetch_course['tutor_id']]);
+            $fetch_tutor = $select_tutor->fetch(PDO::FETCH_ASSOC);
       ?>
       <div class="box">
          <div class="tutor">
             <img src="uploaded_files/<?= $fetch_tutor['image']; ?>" alt="">
             <div>
                <h3><?= $fetch_tutor['name']; ?></h3>
-               <span><?= $fetch_course['date']; ?></span>
+               <span><?= $fetch_course['date_created']; ?></span>
             </div>
          </div>
          <img src="uploaded_files/<?= $fetch_course['thumb']; ?>" class="thumb" alt="">
          <h3 class="title"><?= $fetch_course['title']; ?></h3>
-         <a href="playlist.php?get_id=<?= $course_id; ?>" class="inline-btn">View playlist</a>
+         <a href="tutor_projects.php?tutor_id=<?= $fetch_tutor['id']; ?>" class="inline-btn">View all projects</a>
       </div>
       <?php
+         }else{
+            echo '<p class="empty">No courses added yet!</p>';
          }
-      }else{
-         echo '<p class="empty">no courses added yet!</p>';
-      }
       ?>
 
    </div>
@@ -247,18 +228,8 @@ $total_bookmarked = $select_bookmark->rowCount();
 
 </section>
 
+
 <!-- courses section ends -->
-
-
-
-
-
-
-
-
-
-
-
 
 <!-- footer section starts  -->
 <?php include 'components/footer.php'; ?>

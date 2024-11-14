@@ -99,6 +99,16 @@ CREATE TABLE `likes` (
 CREATE TABLE `playlist` (
   `id` varchar(20) NOT NULL,
   `tutor_id` varchar(20) NOT NULL,
+  `title` varchar(100) NOT NULL,  -- Project Name
+  `description` varchar(1000) NOT NULL,  -- Project Description
+  `start_date` date NOT NULL,  -- Project Start Date
+  `end_date` date,  -- Project End Date (optional for ongoing projects)
+  `status` ENUM('ongoing', 'completed') NOT NULL DEFAULT 'completed',  -- Status ('completed', 'ongoing')
+  `role` varchar(100) NOT NULL,  -- Role (like Chief Investigator, Researcher, etc.)
+  `funds` varchar(100) NOT NULL,  -- Source of funds
+  `notes` varchar(1000),  -- Any additional collaboration/notes
+  `date_created` date NOT NULL DEFAULT current_timestamp()  -- Creation Date
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `title` varchar(100) NOT NULL,
   `description` varchar(1000) NOT NULL,
   `thumb` varchar(100) NOT NULL,
@@ -113,6 +123,17 @@ CREATE TABLE `playlist` (
 --
 
 CREATE TABLE `tutors` (
+  `id` VARCHAR(20) NOT NULL,
+  `name` VARCHAR(50) NOT NULL,
+  `faculty` VARCHAR(50),
+  `university` VARCHAR(100),
+  `orcid` VARCHAR(19) UNIQUE,
+  `email` VARCHAR(50) NOT NULL,
+  `password` VARCHAR(50) NOT NULL,
+  `image` VARCHAR(100) DEFAULT 'default.png',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `id` varchar(20) NOT NULL,
   `name` varchar(50) NOT NULL,
   `profession` varchar(50) NOT NULL,
@@ -129,6 +150,7 @@ CREATE TABLE `tutors` (
 INSERT INTO `tutors` (`id`, `name`, `profession`, `email`, `password`, `image`, `favorite_color`) VALUES
 ('MuSFtvfM164yOr4V7ipf', 'Nguyễn Duy Khánh', 'developer', 'nguyenduykhanh18112003@gmail.com', '7c4a8d09ca3762af61e59520943dc26494f8941b', 'yKXPdkRiI1DvVa0flrj0.jpg', NULL),
 ('aF7c33qcVvpAZ5biS7vs', 'Nguyễn Duy Khánh', 'developer', 'ndk1811@gmail.com', '7c4a8d09ca3762af61e59520943dc26494f8941b', 'tN9R0ZNAHkRWCPMt9WfK.jpg', NULL);
+
 
 -- --------------------------------------------------------
 

@@ -2,6 +2,11 @@
 
 include 'components/connect.php';
 
+function generate_orcid() {
+    // Generate a random 16-digit ORCID number in the format xxxx-xxxx-xxxx-xxxx
+    return sprintf('%04d-%04d-%04d-%04d', mt_rand(0, 9999), mt_rand(0, 9999), mt_rand(0, 9999), mt_rand(0, 9999));
+}
+
 if(isset($_POST['submit'])){
 
    $id = unique_id();
@@ -14,16 +19,26 @@ if(isset($_POST['submit'])){
    $cpass = sha1($_POST['cpass']);
    $cpass = filter_var($cpass, FILTER_SANITIZE_STRING);
 
+   // Capture optional fields for faculty, university, and orcid
+   $faculty = $_POST['faculty'];
+   $faculty = filter_var($faculty, FILTER_SANITIZE_STRING);
+   $university = $_POST['university'];
+   $university = filter_var($university, FILTER_SANITIZE_STRING);
+   $orcid = !empty($_POST['orcid']) ? $_POST['orcid'] : generate_orcid(); // Generate ORCID if empty
+   $orcid = filter_var($orcid, FILTER_SANITIZE_STRING);
+
+   // Handle optional image upload
    $image = $_FILES['image']['name'];
    $image = filter_var($image, FILTER_SANITIZE_STRING);
-   $ext = pathinfo($image, PATHINFO_EXTENSION);
-   $rename = unique_id().'.'.$ext;
-   $image_size = $_FILES['image']['size'];
-   $image_tmp_name = $_FILES['image']['tmp_name'];
-   $image_folder = 'uploaded_files/'.$rename;
-
-   $profession = $_POST['profession']; // Capture profession input if present
-   $profession = filter_var($profession, FILTER_SANITIZE_STRING);
+   $rename = '';
+   if (!empty($image)) {
+       $ext = pathinfo($image, PATHINFO_EXTENSION);
+       $rename = unique_id().'.'.$ext;
+       $image_tmp_name = $_FILES['image']['tmp_name'];
+       $image_folder = 'uploaded_files/'.$rename;
+   } else {
+       $rename = 'anoymous.jpg'; // Use a default image if no image is uploaded
+   }
 
    // Check if email already exists in tutors or users tables
    $select_user = $conn->prepare("SELECT * FROM `users` WHERE email = ?");
@@ -38,23 +53,24 @@ if(isset($_POST['submit'])){
       if($pass != $cpass){
          $message[] = 'Confirm password not matched!';
       }else{
-         // If profession is not empty, insert into tutors, otherwise into users
-         if(!empty($profession)) {
-            $insert_tutor = $conn->prepare("INSERT INTO `tutors`(id, name, profession, email, password, image) VALUES(?,?,?,?,?,?)");
-            $insert_tutor->execute([$id, $name, $profession, $email, $cpass, $rename]);
+         // If faculty and university are provided, insert into tutors, otherwise into users
+         if(!empty($faculty) && !empty($university)) {
+            $insert_tutor = $conn->prepare("INSERT INTO `tutors`(id, name, faculty, university, orcid, email, password, image) VALUES(?,?,?,?,?,?,?,?)");
+            $insert_tutor->execute([$id, $name, $faculty, $university, $orcid, $email, $cpass, $rename]);
             $message[] = 'New tutor registered! Please login now.';
          } else {
             $insert_user = $conn->prepare("INSERT INTO `users`(id, name, email, password, image) VALUES(?,?,?,?,?)");
             $insert_user->execute([$id, $name, $email, $cpass, $rename]);
             $message[] = 'New user registered! Please login now.';
          }
-         move_uploaded_file($image_tmp_name, $image_folder);
+         if (!empty($image)) {
+             move_uploaded_file($image_tmp_name, $image_folder);
+         }
       }
    }
 
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -74,11 +90,9 @@ if(isset($_POST['submit'])){
 <?php include 'components/user_header.php'; ?>
 <?php
 if (isset($message)) {
-    // Check if $message is an array, if not, convert it to an array
     if (!is_array($message)) {
-        $message = [$message]; // Wrap $message into an array
+        $message = [$message];
     }
-    
     foreach($message as $msg) {
         echo '
         <div class="message form">
@@ -89,7 +103,6 @@ if (isset($message)) {
     }
 }
 ?>
-
 
 <section class="form-container">
    <form class="register" action="" method="post" enctype="multipart/form-data">
@@ -109,27 +122,24 @@ if (isset($message)) {
          </div>
       </div>
 
-      <p>Your Profession (Only if you're a tutor) <span>*</span></p>
-      <select name="profession" class="box">
-         <option value="" selected>-- Optional: Select your profession --</option>
-         <option value="developer">Developer</option>
-         <option value="designer">Designer</option>
-         <option value="musician">Musician</option>
-         <option value="biologist">Biologist</option>
-         <option value="engineer">Engineer</option>
-         <option value="lawyer">Lawyer</option>
-         <option value="accountant">Accountant</option>
-         <option value="doctor">Doctor</option>
-         <!-- Add more options as needed -->
-      </select>
+      <p>Faculty (If you're a tutor)</p>
+      <input type="text" name="faculty" placeholder="Enter your faculty" maxlength="50" class="box">
+      
+      <p>University (If you're a tutor)</p>
+      <input type="text" name="university" placeholder="Enter your university" maxlength="50" class="box">
+      
+      <!-- <p>ORCID (If you're a tutor) - Optional</p>
+      <input type="text" name="orcid" placeholder="Enter your ORCID" maxlength="20" class="box"> -->
 
-      <p>Choose Your Image <span>*</span></p>
-      <input type="file" name="image" accept="image/*" required class="box">
+      <p>Choose Your Image - Optional</p>
+      <input type="file" name="image" accept="image/*" class="box">
 
       <p class="link">Already have an account? <a href="login_combine.php">Sign in now</a></p>
       <input type="submit" name="submit" value="Register Now" class="btn">
    </form>
 </section>
+
+
 
 <?php include 'components/footer.php'; ?>
 
