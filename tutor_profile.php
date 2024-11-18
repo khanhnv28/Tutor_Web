@@ -47,7 +47,7 @@ if(isset($_POST['tutor_fetch'])){
    <meta charset="UTF-8">
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>tutor's profile</title>
+   <title>Tutor's profile</title>
 
    <!-- font awesome cdn link  -->
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
@@ -70,7 +70,7 @@ if(isset($_POST['tutor_fetch'])){
       <div class="tutor">
          <img src="uploaded_files/<?= $fetch_tutor['image']; ?>" alt="">
          <h3><?= $fetch_tutor['name']; ?></h3>
-         <span><?= $fetch_tutor['profession']; ?></span>
+         <span><?= $fetch_tutor['faculty']; ?></span>
       </div>
       <div class="flex">
          <p>Total playlists : <span><?= $total_playlists; ?></span></p>
