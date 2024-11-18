@@ -2,194 +2,175 @@
 include 'components/connect.php';
 
 if (isset($_COOKIE['user_id'])) {
-   $user_id = $_COOKIE['user_id'];
+    $user_id = $_COOKIE['user_id'];
 } else {
-   $user_id = '';
+    $user_id = '';
 }
+
+// Lấy danh sách các trường đại học từ cơ sở dữ liệu
+$select_universities = $conn->prepare("SELECT DISTINCT university FROM `tutors`");
+$select_universities->execute();
+
+// Xử lý tìm kiếm theo tên giảng viên và trường đại học
+$whereClause = '';
+$params = [];
+
+if (isset($_POST['university_search']) || isset($_POST['search_tutor_btn'])) {
+    $search_tutor = $_POST['search_tutor'] ?? '';
+    $search_tutor = filter_var($search_tutor, FILTER_SANITIZE_STRING);
+
+    $university = $_POST['university'] ?? '';
+    $university = filter_var($university, FILTER_SANITIZE_STRING);
+
+    // Tìm kiếm theo tên giảng viên và/hoặc trường đại học
+    if ($search_tutor && $university) {
+        $whereClause = "WHERE name LIKE ? AND university = ?";
+        $params[] = "%" . $search_tutor . "%";
+        $params[] = $university;
+    } elseif ($search_tutor) {
+        $whereClause = "WHERE name LIKE ?";
+        $params[] = "%" . $search_tutor . "%";
+    } elseif ($university) {
+        $whereClause = "WHERE university = ?";
+        $params[] = $university;
+    }
+}
+
+$query = "SELECT * FROM `tutors` $whereClause";
+$select_tutors = $conn->prepare($query);
+$select_tutors->execute($params);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <meta charset="UTF-8">
-   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Teachers</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teachers</title>
 
-   <!-- font awesome cdn link -->
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <!-- Font Awesome CDN Link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
 
-   <!-- custom css file link, đảm bảo file style.css ở cuối -->
-   <link rel="stylesheet" href="css/style.css">
+    <!-- Custom CSS File Link -->
+    <link rel="stylesheet" href="css/style.css">
 
-   <!-- CSS lưới nội tuyến -->
-   <style>
-      .teacher-grid {
-         display: flex;
-         flex-wrap: wrap;
-         gap: 20px;
-         justify-content: center; /* canh giữa các phần tử */
-   }  
+    <style>
+        .teacher-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
 
-      .teacher-card {
-         width: 200px;
-         padding: 20px;
-         background-color: #f0f0f0;
-         border-radius: 8px;
-         text-align: center;
-         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
+        .teacher-card {
+            width: 250px;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
-      .tutor-name {
-         font-size: 1.1em;
-         margin-bottom: 10px;
-         font-weight: bold;
-      }
-      .inline-btn {
-         background-color: #6A0DAD;
-         color: #fff;
-         padding: 8px 16px;
-         border: none;
-         border-radius: 5px;
-         cursor: pointer;
-         font-size: 0.9em;
-         text-transform: uppercase;
-      }
-      .inline-btn:hover {
-         background-color: #5A0C9C;
-      }
-      .empty {
-         grid-column: 1 / -1;
-         text-align: center;
-         font-size: 1.2em;
-         color: #888;
-      }
-      /* Grid layout for tutors */
-      .tutors-list {
-         display: grid;
-         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-         gap: 20px;
-         padding: 20px;
-      }
-      .tutor-info {
-         background-color: #f9f9f9;
-         padding: 20px;
-         border-radius: 10px;
-         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-         border: 1px solid #ddd;
-      }
-      .tutor-info h2 {
-         color: blue;
-         text-decoration: underline;
-      }
-      .tutor-info p {
-         margin: 5px 0;
-      }
-      .highlight {
-         color: green;
-         font-weight: bold;
-      }
-      .italic {
-         font-style: italic;
-      }
-   </style>
+        .teacher-card h3 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .inline-btn {
+            background-color: #6A0DAD;
+            color: #fff;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin: 5px;
+            text-transform: uppercase;
+        }
+
+        .inline-btn:hover {
+            background-color: #5A0C9C;
+        }
+
+        .empty {
+            text-align: center;
+            font-size: 1.2em;
+            color: #888;
+        }
+
+        select {
+            padding: 8px;
+            font-size: 1em;
+            margin-right: 10px;
+        }
+
+        .search-btn {
+            padding: 8px 16px;
+            background-color: #6A0DAD;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .search-btn:hover {
+            background-color: #5A0C9C;
+        }
+    </style>
 </head>
 <body>
 
 <?php include 'components/user_header.php'; ?>
 
 <section class="teachers">
-   <h1 class="heading">Professional Tutor</h1>
+    <h1 class="heading">Professional Tutors</h1>
 
-   <form action="search_tutor.php" method="post" class="search-tutor">
-      <input type="text" name="search_tutor" maxlength="100" placeholder="Tìm kiếm giảng viên..." required>
-      <button type="submit" name="search_tutor_btn" class="fas fa-search"></button>
-   </form>
-
-   <div class="teacher-grid">
-   <?php
-      $select_tutors = $conn->prepare("SELECT * FROM `tutors`");
-      $select_tutors->execute();
-      if($select_tutors->rowCount() > 0){
-         while($fetch_tutor = $select_tutors->fetch(PDO::FETCH_ASSOC)){
-   ?>
-   <div class="teacher-card">
-      <p class="tutor-name"><?= htmlspecialchars($fetch_tutor['name']); ?></p>
-      <form action="tutor_profile.php" method="post">
-         <input type="hidden" name="tutor_email" value="<?= htmlspecialchars($fetch_tutor['email']); ?>">
-         <input type="submit" value="View Profiles" name="tutor_fetch" class="inline-btn">
-      </form>
-   </div>
-   <?php
-         }
-      } else {
-         echo '<div class="empty">Không tìm thấy giảng viên!</div>';
-      }
-   ?>
-
-   <h1 class="heading">Expert Tutors</h1>
-
-   <form action="search_tutor.php" method="post" class="search-tutor">
-      <input type="text" name="search_tutor" maxlength="100" placeholder="Search tutor..." required>
-      <button type="submit" name="search_tutor_btn" class="fas fa-search"></button>
-   </form>
-
-   <div class="tutors-list">
-      <?php
-         // Select all tutors from the Users table with role_id = 1 (assuming this is the tutor role)
-         $select_tutors = $conn->prepare("SELECT * FROM `Users` WHERE role_id = :role_id");
-         $select_tutors->execute(['role_id' => 1]); // role_id 1 represents tutors
-         
-         if ($select_tutors->rowCount() > 0) {
-            while ($fetch_tutor = $select_tutors->fetch(PDO::FETCH_ASSOC)) {
-
-               $tutor_id = $fetch_tutor['userid'];
-
-               // Count total playlists by the tutor
-               $count_playlists = $conn->prepare("SELECT * FROM `playlist` WHERE tutor_id = ?");
-               $count_playlists->execute([$tutor_id]);
-               $total_playlists = $count_playlists->rowCount();
-
-               // Count total contents by the tutor
-               $count_contents = $conn->prepare("SELECT * FROM `content` WHERE tutor_id = ?");
-               $count_contents->execute([$tutor_id]);
-               $total_contents = $count_contents->rowCount();
-
-               // Count total likes by the tutor
-               $count_likes = $conn->prepare("SELECT * FROM `likes` WHERE tutor_id = ?");
-               $count_likes->execute([$tutor_id]);
-               $total_likes = $count_likes->rowCount();
-
-               // Count total comments by the tutor
-               $count_comments = $conn->prepare("SELECT * FROM `comments` WHERE tutor_id = ?");
-               $count_comments->execute([$tutor_id]);
-               $total_comments = $count_comments->rowCount();
-      ?>
-      <div class="tutor-info">
-         <h2><a href="tutor_profile.php?tutor_id=<?= $tutor_id; ?>" class="hyperlink"><?= htmlspecialchars($fetch_tutor['username']); ?></a></h2>
-         <p class="italic">Profession: <?= htmlspecialchars($fetch_tutor['degree']); ?></p>
-         <p>Playlists: <span class="highlight"><?= $total_playlists; ?></span></p>
-         <p>Total Videos: <?= $total_contents ?></p>
-         <p>Total Likes: <?= $total_likes ?></p>
-         <p>Total Comments: <?= $total_comments ?></p>
-      </div>
-      <?php
+    <!-- Tìm kiếm theo tên giảng viên và trường đại học -->
+    <form action="teachers.php" method="post" class="search-tutor">
+        <input type="text" name="search_tutor" maxlength="100" placeholder="Search for a tutor by name..." value="<?= isset($_POST['search_tutor']) ? htmlspecialchars($_POST['search_tutor']) : ''; ?>">
+        <select name="university">
+            <option value="" disabled selected>Select University</option>
+            <?php
+            while ($fetch_university = $select_universities->fetch(PDO::FETCH_ASSOC)) {
+                $selected = isset($_POST['university']) && $_POST['university'] == $fetch_university['university'] ? 'selected' : '';
+                echo '<option value="' . htmlspecialchars($fetch_university['university']) . '" ' . $selected . '>' . htmlspecialchars($fetch_university['university']) . '</option>';
             }
-         } else {
-            echo '<p class="empty">No tutors found!</p>';
-         }
-      ?>
-   </div>
+            ?>
+        </select>
+        <button type="submit" name="university_search" class="fas fa-search"></button>
+    </form>
 
+    <!-- Hiển thị giảng viên -->
+    <div class="teacher-grid">
+        <?php
+        if ($select_tutors->rowCount() > 0) {
+            while ($fetch_tutor = $select_tutors->fetch(PDO::FETCH_ASSOC)) {
+        ?>
+            <div class="teacher-card">
+                <img src="uploaded_files/<?= htmlspecialchars($fetch_tutor['image']); ?>" alt="<?= htmlspecialchars($fetch_tutor['name']); ?>" style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 10px;">
+                <h3><?= htmlspecialchars($fetch_tutor['name']); ?></h3>
+                <p><?= htmlspecialchars($fetch_tutor['faculty']); ?></p>
+                <form action="teachers.php" method="post">
+                    <input type="hidden" name="tutor_email" value="<?= htmlspecialchars($fetch_tutor['email']); ?>">
+                    <button type="submit" name="action" value="projects" class="inline-btn">View Projects</button>
+                </form>
+                <form action="tutor_profile.php" method="post">
+                    <input type="hidden" name="tutor_email" value="<?= htmlspecialchars($fetch_tutor['email']); ?>">
+                    <input type="submit" value="View Profiles" name="tutor_fetch" class="inline-btn">
+                </form>
+            </div>
+        <?php
+            }
+        } else {
+            echo '<div class="empty">No tutors found!</div>';
+        }
+        ?>
+    </div>
 </section>
 
 <?php include 'components/footer.php'; ?>
 
-<!-- teachers section ends -->
-
-<?php include 'components/footer.php'; ?>    
-
-<!-- custom js file link  -->
+<!-- Custom JS File Link -->
 <script src="js/script.js"></script>
 
 </body>
